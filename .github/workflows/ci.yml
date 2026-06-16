@@ -24,7 +24,9 @@ jobs:
         run: sed -i '/^org.gradle.java.home=/d' gradle.properties || true
 
       - name: Test
-        run: ./gradlew test --no-daemon
+        run: |
+          chmod +x gradlew
+          ./gradlew test --no-daemon
 
   frontend:
     name: Frontend
