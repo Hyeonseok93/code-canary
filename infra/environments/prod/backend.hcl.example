@@ -1,0 +1,6 @@
+# Copy to backend.hcl or pass via: terraform init -backend-config=backend.hcl
+#
+# Use a dedicated S3 bucket (and optional DynamoDB lock table) in a production AWS account.
+bucket = "codecanary-tfstate"
+key    = "prod/terraform.tfstate"
+region = "ap-northeast-2"

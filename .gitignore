@@ -18,6 +18,18 @@ docs/
 # GitHub self-hosted runner (local install)
 actions-runner/
 
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+**/backend.hcl
+
 # Editor / OS
 .vscode/
 .idea/
