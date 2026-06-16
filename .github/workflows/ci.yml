@@ -20,6 +20,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: gradle
+          cache-dependency-path: |
+            backend/build.gradle.kts
+            backend/settings.gradle.kts
+
       - name: Use runner JDK (ignore Windows-only gradle.properties)
         run: sed -i '/^org.gradle.java.home=/d' gradle.properties || true
 
