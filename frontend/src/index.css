@@ -1,0 +1,257 @@
+@import "tailwindcss";
+@import "./styles/inter.css";
+
+@layer base {
+  body {
+    @apply bg-[#000000] text-[#888888];
+    margin: 0;
+    /* Highest quality sans-serif stack */
+    font-family: 'Inter Variable', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  
+  h1, h2, h3, h4, span, button {
+    /* Apply negative tracking for that premium "compact" look */
+    @apply tracking-[-0.03em];
+  }
+
+  h1 {
+    @apply text-white font-black tracking-[-0.05em];
+  }
+}
+
+.animate-reveal {
+  animation: reveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animation-delay-500 {
+  animation-delay: 0.5s;
+}
+
+.no-scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.no-scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.animate-float {
+  animation: float 5s ease-in-out infinite;
+}
+
+.animate-twinkle {
+  animation: twinkle 3s ease-in-out infinite;
+}
+
+.animate-glitch {
+  animation: glitch 4s linear infinite, flicker 6s infinite;
+}
+
+.animate-shine {
+  animation: shine 3.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.shine-sweep {
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0) 40%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0) 60%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  pointer-events: none;
+}
+
+@keyframes reveal {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@layer components {
+  /* Shared surface borders — Dashboard / Explorer / Detail */
+  .cc-panel-border {
+    @apply border border-white/[0.14];
+  }
+
+  .cc-panel-border-soft {
+    @apply border border-white/[0.12];
+  }
+
+  /* Admin console — slightly stronger borders for dark background readability */
+  .cc-admin-border {
+    @apply border border-white/[0.24];
+  }
+
+  .cc-admin-border-soft {
+    @apply border border-white/[0.18];
+  }
+
+  .cc-admin-divider {
+    @apply border-white/[0.20];
+  }
+
+  .cc-divider-h {
+    @apply border-white/[0.12];
+  }
+
+  .cc-header-divider {
+    @apply w-[2px] h-8 shrink-0 rounded-full bg-gradient-to-b from-neutral-600 via-neutral-200 to-neutral-600;
+  }
+
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.1) rgba(255, 255, 255, 0.01);
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.01);
+    border-radius: 9999px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 9999px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.15);
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes twinkle {
+  0%, 100% { 
+    opacity: 0.8; 
+    filter: brightness(1) drop-shadow(0 0 5px rgba(255, 255, 255, 0.05)); 
+  }
+  50% { 
+    opacity: 1; 
+    filter: brightness(1.2) drop-shadow(0 0 25px rgba(255, 255, 255, 0.25)); 
+  }
+}
+
+@keyframes glitch {
+  0%, 10%, 14%, 50%, 80%, 84%, 100% {
+    transform: translate(0);
+    filter: hue-rotate(0deg) saturate(1);
+  }
+  11% {
+    transform: translate(-3px, 1px);
+    filter: hue-rotate(45deg) saturate(1.4);
+  }
+  12% {
+    transform: translate(3px, -1px);
+    filter: hue-rotate(-45deg) saturate(1.4);
+  }
+  13% {
+    transform: translate(-1px, -1px);
+    filter: hue-rotate(15deg) saturate(1.2);
+  }
+  81% {
+    transform: translate(2px, 2px);
+    filter: hue-rotate(90deg) saturate(1.5);
+  }
+  82% {
+    transform: translate(-2px, -2px);
+    filter: hue-rotate(-90deg) saturate(1.5);
+  }
+  83% {
+    transform: translate(1px, -1px);
+    filter: hue-rotate(30deg) saturate(1.2);
+  }
+}
+
+@keyframes flicker {
+  0%, 18%, 26%, 48%, 56%, 78%, 86%, 100% {
+    opacity: 0.85;
+  }
+  19%, 49%, 79% {
+    opacity: 0.95;
+  }
+  20%, 50%, 80% {
+    opacity: 0.25;
+  }
+  21%, 51%, 81% {
+    opacity: 0.85;
+  }
+  22%, 52%, 82% {
+    opacity: 0.95;
+  }
+  23%, 53%, 83% {
+    opacity: 0.15;
+  }
+  24%, 54%, 84% {
+    opacity: 0.85;
+  }
+}
+
+
+
+
+
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 0.1; }
+  50% { opacity: 0.25; }
+}
+
+.animate-skeleton {
+  animation: skeleton-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Custom Cyberpunk Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.01);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.15);
+}
+
+/* Standard scrollbar rules for Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.1) rgba(255, 255, 255, 0.01);
+}
+
+/* Recharts ResponsiveContainer flexbox height calculation bug fix */
+.recharts-responsive-container {
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+}
+

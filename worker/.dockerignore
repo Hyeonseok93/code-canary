@@ -1,0 +1,9 @@
+__pycache__
+*.egg-info
+*.py[cod]
+*.log
+logs
+.git
+.gitignore
+*.md
+.env

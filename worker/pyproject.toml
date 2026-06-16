@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "code-canary-worker"
+version = "0.1.0"
+description = "Code Canary vulnerability pipeline worker"
+requires-python = ">=3.12"
+dependencies = [
+    "requests>=2.32.0",
+    "python-dotenv>=1.0.0",
+    "sqlalchemy>=2.0.0",
+    "psycopg2-binary>=2.9.0",
+    "natsort>=8.4.0",
+    "cvss>=3.6",
+    "cwe2>=3.0.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project.scripts]
+code-canary-worker = "code_canary_worker.runner:main"
+code-canary-cli = "code_canary_worker.cli:main"

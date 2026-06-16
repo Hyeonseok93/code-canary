@@ -1,0 +1,25 @@
+.env
+.env.*
+!.env.example
+
+# Compose secrets (generated from .env — never commit)
+.docker-secrets/
+local/.docker-secrets/*
+!local/.docker-secrets/.gitignore
+
+data/
+__pycache__/
+*.egg-info
+logs/
+*.log
+
+docs/
+
+# GitHub self-hosted runner (local install)
+actions-runner/
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
