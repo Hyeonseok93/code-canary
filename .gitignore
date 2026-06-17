@@ -7,7 +7,7 @@
 local/.docker-secrets/*
 !local/.docker-secrets/.gitignore
 
-data/
+/data/
 __pycache__/
 *.egg-info
 logs/
