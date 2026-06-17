@@ -126,6 +126,42 @@ variable "jwt_cookie_secure" {
   default     = false
 }
 
+variable "frontend_hsts_enabled" {
+  description = "Enable HSTS response header on the frontend nginx container."
+  type        = bool
+  default     = false
+}
+
+variable "trusted_proxy_cidrs" {
+  description = "VPC CIDR (or comma-separated CIDRs) for ALB/nginx trusted proxy client IP resolution."
+  type        = string
+  default     = ""
+}
+
+variable "efs_file_system_id" {
+  description = "EFS file system ID for pipeline staging (/data). Null disables the mount."
+  type        = string
+  default     = null
+}
+
+variable "efs_access_point_id" {
+  description = "EFS access point ID for pipeline staging."
+  type        = string
+  default     = null
+}
+
+variable "efs_file_system_arn" {
+  description = "EFS file system ARN for IAM task policy."
+  type        = string
+  default     = null
+}
+
+variable "efs_access_point_arn" {
+  description = "EFS access point ARN for IAM task policy."
+  type        = string
+  default     = null
+}
+
 variable "enable_container_insights" {
   description = "Enable ECS Container Insights on the cluster."
   type        = bool

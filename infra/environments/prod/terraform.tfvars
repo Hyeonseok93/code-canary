@@ -21,12 +21,19 @@ redis_node_type = "cache.t3.small"
 
 alb_enable_deletion_protection = true
 enable_https                   = false
-# acm_certificate_arn = "arn:aws:acm:ap-northeast-2:123456789012:certificate/..."
+
+# --- HTTPS / DNS / edge (prod) ---
+# domain_name                      = "app.example.com"
+# domain_subject_alternative_names = ["www.example.com"]
+# create_route53_zone              = false
+# route53_zone_id                  = "Z1234567890ABC"
+# enable_https                     = true
+# enable_waf                       = true
+# enable_cloudfront                = true
 
 ecs_desired_count             = 2
 ecs_enable_container_insights = true
 ecs_log_retention_in_days     = 30
-jwt_cookie_secure             = false
 
 backend_cpu     = 1024
 backend_memory  = 2048

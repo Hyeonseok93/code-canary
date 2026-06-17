@@ -22,10 +22,17 @@ redis_node_type = "cache.t3.small"
 alb_enable_deletion_protection = false
 enable_https                   = false
 
+# --- HTTPS / DNS / edge (staging) ---
+# domain_name                      = "staging.example.com"
+# create_route53_zone              = false
+# route53_zone_id                  = "Z1234567890ABC"
+# enable_https                     = true
+# enable_waf                       = true
+# enable_cloudfront                = false
+
 ecs_desired_count             = 1
 ecs_enable_container_insights = true
 ecs_log_retention_in_days     = 14
-jwt_cookie_secure             = false
 
 backend_cpu     = 512
 backend_memory  = 1024

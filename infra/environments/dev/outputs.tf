@@ -19,8 +19,32 @@ output "vpc_id" {
 }
 
 output "alb_dns_name" {
-  description = "Application URL (HTTP or HTTPS depending on enable_https)."
+  description = "Application load balancer DNS name."
   value       = module.alb.alb_dns_name
+}
+
+output "app_url" {
+  description = "Primary application URL (custom domain, CloudFront, or ALB)."
+  value = var.enable_cloudfront ? (
+    var.domain_name != null ? "https://${var.domain_name}" : "https://${module.cloudfront[0].domain_name}"
+    ) : (
+    var.enable_https && var.domain_name != null ? "https://${var.domain_name}" : "http://${module.alb.alb_dns_name}"
+  )
+}
+
+output "cloudfront_domain_name" {
+  description = "CloudFront distribution domain (when enable_cloudfront is true)."
+  value       = var.enable_cloudfront ? module.cloudfront[0].domain_name : null
+}
+
+output "route53_zone_id" {
+  description = "Route53 hosted zone ID when DNS is managed."
+  value       = local.route53_zone_id
+}
+
+output "acm_certificate_arn" {
+  description = "Regional ACM certificate ARN when HTTPS is enabled."
+  value       = local.acm_certificate_arn
 }
 
 output "ecs_cluster_name" {

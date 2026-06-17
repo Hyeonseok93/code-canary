@@ -20,18 +20,6 @@ variable "aws_region" {
   default     = "ap-northeast-2"
 }
 
-variable "use_fakecloud" {
-  description = "Route AWS API calls to a local fakecloud/LocalStack-compatible endpoint."
-  type        = bool
-  default     = false
-}
-
-variable "fakecloud_endpoint" {
-  description = "Base URL for fakecloud when use_fakecloud is true."
-  type        = string
-  default     = "http://localhost:4566"
-}
-
 variable "vpc_cidr" {
   description = "VPC CIDR block."
   type        = string
@@ -134,13 +122,67 @@ variable "alb_enable_deletion_protection" {
 }
 
 variable "enable_https" {
-  description = "Enable HTTPS on the ALB (requires acm_certificate_arn)."
+  description = "Enable HTTPS on the ALB (requires acm_certificate_arn or domain_name)."
   type        = bool
   default     = false
 }
 
 variable "acm_certificate_arn" {
-  description = "ACM certificate ARN for HTTPS."
+  description = "Existing ACM certificate ARN for ALB HTTPS (regional). Ignored when domain_name is set."
+  type        = string
+  default     = null
+}
+
+variable "domain_name" {
+  description = "Custom domain for Route53 + automatic regional ACM when enable_https is true."
+  type        = string
+  default     = null
+}
+
+variable "domain_subject_alternative_names" {
+  description = "Extra names on the ACM certificate (e.g. www.example.com)."
+  type        = list(string)
+  default     = []
+}
+
+variable "create_route53_zone" {
+  description = "Create a Route53 hosted zone for domain_name."
+  type        = bool
+  default     = false
+}
+
+variable "route53_zone_id" {
+  description = "Existing Route53 zone ID when create_route53_zone is false."
+  type        = string
+  default     = null
+}
+
+variable "enable_waf" {
+  description = "Enable AWS WAF (on ALB, or on CloudFront when enable_cloudfront is true)."
+  type        = bool
+  default     = false
+}
+
+variable "enable_cloudfront" {
+  description = "Place CloudFront in front of the ALB."
+  type        = bool
+  default     = false
+}
+
+variable "cloudfront_price_class" {
+  description = "CloudFront price class."
+  type        = string
+  default     = "PriceClass_200"
+}
+
+variable "enable_pipeline_efs" {
+  description = "Provision EFS for worker/backend pipeline staging at /data."
+  type        = bool
+  default     = true
+}
+
+variable "trusted_proxy_cidrs" {
+  description = "Override trusted proxy CIDRs for backend rate limiting (defaults to vpc_cidr)."
   type        = string
   default     = null
 }
@@ -170,7 +212,7 @@ variable "ecs_log_retention_in_days" {
 }
 
 variable "jwt_cookie_secure" {
-  description = "Set secure flag on JWT cookies (true when HTTPS is enabled)."
+  description = "Set secure flag on JWT cookies. Automatically true when enable_https or enable_cloudfront is true."
   type        = bool
   default     = false
 }

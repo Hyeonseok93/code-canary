@@ -7,6 +7,13 @@ locals {
   worker_image   = "${var.ecr_registry}/codecanary/worker:${var.image_tag}"
   frontend_image = "${var.ecr_registry}/codecanary/frontend:${var.image_tag}"
 
+  pipeline_efs_enabled = var.efs_file_system_id != null && var.efs_access_point_id != null
+
+  pipeline_data_mount = {
+    sourceVolume  = "pipeline-data"
+    containerPath = "/data"
+  }
+
   common_log_configuration = {
     logDriver = "awslogs"
     options = {
@@ -94,6 +101,32 @@ resource "aws_iam_role" "task" {
   })
 }
 
+resource "aws_iam_role_policy" "task_efs" {
+  count = local.pipeline_efs_enabled ? 1 : 0
+
+  name = "${var.name_prefix}-ecs-efs"
+  role = aws_iam_role.task.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "elasticfilesystem:ClientMount",
+          "elasticfilesystem:ClientWrite"
+        ]
+        Resource = var.efs_file_system_arn
+        Condition = {
+          StringEquals = {
+            "elasticfilesystem:AccessPointArn" = var.efs_access_point_arn
+          }
+        }
+      }
+    ]
+  })
+}
+
 resource "aws_ecs_task_definition" "backend" {
   family                   = "${var.name_prefix}-backend"
   requires_compatibilities = ["FARGATE"]
@@ -103,36 +136,59 @@ resource "aws_ecs_task_definition" "backend" {
   execution_role_arn       = aws_iam_role.execution.arn
   task_role_arn            = aws_iam_role.task.arn
 
-  container_definitions = jsonencode([
-    {
-      name      = "backend"
-      image     = local.backend_image
-      essential = true
-      portMappings = [
-        {
-          containerPort = 8080
-          hostPort      = 8080
-          protocol      = "tcp"
+  dynamic "volume" {
+    for_each = local.pipeline_efs_enabled ? [1] : []
+    content {
+      name = "pipeline-data"
+
+      efs_volume_configuration {
+        file_system_id     = var.efs_file_system_id
+        transit_encryption = "ENABLED"
+
+        authorization_config {
+          access_point_id = var.efs_access_point_id
+          iam             = "ENABLED"
         }
-      ]
-      environment = [
-        { name = "DB_HOST", value = var.db_host },
-        { name = "DB_PORT", value = tostring(var.db_port) },
-        { name = "DB_NAME", value = var.db_name },
-        { name = "DB_USER", value = var.db_username },
-        { name = "REDIS_HOST", value = var.redis_host },
-        { name = "REDIS_PORT", value = tostring(var.redis_port) },
-        { name = "SERVER_PORT", value = "8080" },
-        { name = "JWT_COOKIE_SECURE", value = var.jwt_cookie_secure ? "true" : "false" },
-        { name = "PIPELINE_DATA_ROOT", value = "/data" }
-      ]
-      secrets = [
-        { name = "DB_PASSWORD", valueFrom = var.db_password_secret_arn },
-        { name = "REDIS_PASSWORD", valueFrom = var.redis_password_secret_arn },
-        { name = "JWT_SECRET", valueFrom = var.jwt_secret_arn }
-      ]
-      logConfiguration = local.common_log_configuration
+      }
     }
+  }
+
+  container_definitions = jsonencode([
+    merge(
+      {
+        name      = "backend"
+        image     = local.backend_image
+        essential = true
+        portMappings = [
+          {
+            containerPort = 8080
+            hostPort      = 8080
+            protocol      = "tcp"
+          }
+        ]
+        environment = [
+          { name = "DB_HOST", value = var.db_host },
+          { name = "DB_PORT", value = tostring(var.db_port) },
+          { name = "DB_NAME", value = var.db_name },
+          { name = "DB_USER", value = var.db_username },
+          { name = "REDIS_HOST", value = var.redis_host },
+          { name = "REDIS_PORT", value = tostring(var.redis_port) },
+          { name = "SERVER_PORT", value = "8080" },
+          { name = "JWT_COOKIE_SECURE", value = var.jwt_cookie_secure ? "true" : "false" },
+          { name = "PIPELINE_DATA_ROOT", value = "/data" },
+          { name = "TRUSTED_PROXY_CIDRS", value = var.trusted_proxy_cidrs }
+        ]
+        secrets = [
+          { name = "DB_PASSWORD", valueFrom = var.db_password_secret_arn },
+          { name = "REDIS_PASSWORD", valueFrom = var.redis_password_secret_arn },
+          { name = "JWT_SECRET", valueFrom = var.jwt_secret_arn }
+        ]
+        logConfiguration = local.common_log_configuration
+      },
+      local.pipeline_efs_enabled ? {
+        mountPoints = [merge(local.pipeline_data_mount, { readOnly = true })]
+      } : {}
+    )
   ])
 
   tags = merge(local.tags, {
@@ -149,23 +205,45 @@ resource "aws_ecs_task_definition" "worker" {
   execution_role_arn       = aws_iam_role.execution.arn
   task_role_arn            = aws_iam_role.task.arn
 
-  container_definitions = jsonencode([
-    {
-      name      = "worker"
-      image     = local.worker_image
-      essential = true
-      environment = [
-        { name = "DB_HOST", value = var.db_host },
-        { name = "DB_PORT", value = tostring(var.db_port) },
-        { name = "DB_NAME", value = var.db_name },
-        { name = "DB_USER", value = var.db_username },
-        { name = "PIPELINE_DATA_ROOT", value = "/data" }
-      ]
-      secrets = [
-        { name = "DB_PASSWORD", valueFrom = var.db_password_secret_arn }
-      ]
-      logConfiguration = local.common_log_configuration
+  dynamic "volume" {
+    for_each = local.pipeline_efs_enabled ? [1] : []
+    content {
+      name = "pipeline-data"
+
+      efs_volume_configuration {
+        file_system_id     = var.efs_file_system_id
+        transit_encryption = "ENABLED"
+
+        authorization_config {
+          access_point_id = var.efs_access_point_id
+          iam             = "ENABLED"
+        }
+      }
     }
+  }
+
+  container_definitions = jsonencode([
+    merge(
+      {
+        name      = "worker"
+        image     = local.worker_image
+        essential = true
+        environment = [
+          { name = "DB_HOST", value = var.db_host },
+          { name = "DB_PORT", value = tostring(var.db_port) },
+          { name = "DB_NAME", value = var.db_name },
+          { name = "DB_USER", value = var.db_username },
+          { name = "PIPELINE_DATA_ROOT", value = "/data" }
+        ]
+        secrets = [
+          { name = "DB_PASSWORD", valueFrom = var.db_password_secret_arn }
+        ]
+        logConfiguration = local.common_log_configuration
+      },
+      local.pipeline_efs_enabled ? {
+        mountPoints = [merge(local.pipeline_data_mount, { readOnly = false })]
+      } : {}
+    )
   ])
 
   tags = merge(local.tags, {
@@ -193,6 +271,9 @@ resource "aws_ecs_task_definition" "frontend" {
           hostPort      = 8080
           protocol      = "tcp"
         }
+      ]
+      environment = [
+        { name = "NGINX_HSTS_ENABLED", value = var.frontend_hsts_enabled ? "true" : "false" }
       ]
       logConfiguration = local.common_log_configuration
     }

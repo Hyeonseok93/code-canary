@@ -15,11 +15,9 @@ logs/
 
 docs/
 
-# GitHub self-hosted runner (local install)
-actions-runner/
-
 # Terraform
 .terraform/
+**/.tf-validate/
 *.tfstate
 *.tfstate.*
 crash.log

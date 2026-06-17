@@ -1,7 +1,7 @@
 name: Deploy
 
 # Register in GitHub → Settings → Secrets and variables → Actions → Secrets.
-# See .github/secrets.example for fakecloud (dev) values.
+# See .github/secrets.example for required values.
 
 on:
   workflow_run:
@@ -18,12 +18,11 @@ jobs:
   build-and-push:
     name: Build and push to ECR
     if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
-    runs-on: [self-hosted, Linux, X64]
+    runs-on: ubuntu-latest
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_REGION: ${{ secrets.AWS_REGION }}
-      AWS_ENDPOINT: ${{ secrets.AWS_ENDPOINT }}
       ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
       VITE_ADMIN_BASE: ${{ secrets.VITE_ADMIN_BASE }}
       VITE_ADMIN_HATCH: ${{ secrets.VITE_ADMIN_HATCH }}
@@ -51,27 +50,13 @@ jobs:
       - name: Resolve image tag
         run: echo "IMAGE_TAG=${{ github.event.workflow_run.head_sha || github.sha }}" >> "$GITHUB_ENV"
 
-      - name: Prepare AWS CLI helper
-        run: |
-          cat > "$RUNNER_TEMP/aws-deploy.sh" <<'SCRIPT'
-          #!/usr/bin/env bash
-          set -eu
-          if [ -n "${AWS_ENDPOINT:-}" ]; then
-            exec aws --endpoint-url "$AWS_ENDPOINT" "$@"
-          fi
-          exec aws "$@"
-          SCRIPT
-          chmod +x "$RUNNER_TEMP/aws-deploy.sh"
-          echo "AWS_DEPLOY=$RUNNER_TEMP/aws-deploy.sh" >> "$GITHUB_ENV"
-
       - name: Verify AWS credentials
-        run: |
-          "$AWS_DEPLOY" sts get-caller-identity
+        run: aws sts get-caller-identity
 
       - name: Ensure ECR repositories
         run: |
           for repo in backend worker frontend; do
-            "$AWS_DEPLOY" ecr create-repository \
+            aws ecr create-repository \
               --repository-name "codecanary/$repo" \
               --image-scanning-configuration scanOnPush=false \
               --region "$AWS_REGION" \
@@ -80,7 +65,7 @@ jobs:
 
       - name: Log in to ECR
         run: |
-          "$AWS_DEPLOY" ecr get-login-password --region "$AWS_REGION" \
+          aws ecr get-login-password --region "$AWS_REGION" \
             | docker login --username AWS --password-stdin "$ECR_REGISTRY"
 
       - name: Prepare frontend build env

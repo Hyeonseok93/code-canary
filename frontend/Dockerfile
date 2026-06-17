@@ -18,5 +18,7 @@ FROM nginxinc/nginx-unprivileged:stable-alpine@sha256:37f356a5eba5d187365b4f59cd
 
 COPY --chown=nginx:nginx --from=build /app/frontend/dist /usr/share/nginx/html
 COPY frontend/nginx.conf /etc/nginx/nginx.conf
+COPY frontend/docker-entrypoint.d/40-hsts.sh /docker-entrypoint.d/40-hsts.sh
+RUN chmod +x /docker-entrypoint.d/40-hsts.sh
 
 EXPOSE 8080

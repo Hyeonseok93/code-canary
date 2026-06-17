@@ -23,8 +23,19 @@ redis_node_type = "cache.t3.micro"
 
 alb_enable_deletion_protection = false
 enable_https                   = false
+# jwt_cookie_secure / NGINX HSTS follow enable_https or enable_cloudfront automatically.
+
+# enable_pipeline_efs = true  # EFS mount at /data for worker + backend (default: true)
+
+# --- HTTPS / DNS / edge (optional; keep off for one-day dev test) ---
+# domain_name                    = "app.example.com"
+# domain_subject_alternative_names = ["www.example.com"]
+# create_route53_zone            = true
+# route53_zone_id                = "Z1234567890ABC"
+# enable_waf                       = false
+# enable_cloudfront                = false
+# acm_certificate_arn            = "arn:aws:acm:ap-northeast-2:123456789012:certificate/..."
 
 ecs_desired_count             = 1
 ecs_enable_container_insights = false
 ecs_log_retention_in_days     = 7
-jwt_cookie_secure             = false
