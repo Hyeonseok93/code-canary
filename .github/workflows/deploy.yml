@@ -1,0 +1,121 @@
+name: Deploy
+
+# Register in GitHub → Settings → Secrets and variables → Actions → Secrets.
+# See .github/secrets.example for fakecloud (dev) values.
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-${{ github.workflow }}-${{ github.event.workflow_run.head_sha || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  build-and-push:
+    name: Build and push to ECR
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: [self-hosted, Linux, X64]
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      AWS_ENDPOINT: ${{ secrets.AWS_ENDPOINT }}
+      ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
+      VITE_ADMIN_BASE: ${{ secrets.VITE_ADMIN_BASE }}
+      VITE_ADMIN_HATCH: ${{ secrets.VITE_ADMIN_HATCH }}
+      VITE_ADMIN_FORAGE: ${{ secrets.VITE_ADMIN_FORAGE }}
+    steps:
+      - name: Validate required secrets
+        run: |
+          missing=0
+          for name in AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_REGION ECR_REGISTRY; do
+            if [ -z "${!name:-}" ]; then
+              echo "::error::Missing repository secret: $name"
+              missing=1
+            fi
+          done
+          if [ "$missing" -ne 0 ]; then
+            echo "Add secrets under Settings → Secrets and variables → Actions (see .github/secrets.example)."
+            exit 1
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+      - name: Resolve image tag
+        run: echo "IMAGE_TAG=${{ github.event.workflow_run.head_sha || github.sha }}" >> "$GITHUB_ENV"
+
+      - name: Prepare AWS CLI helper
+        run: |
+          cat > "$RUNNER_TEMP/aws-deploy.sh" <<'SCRIPT'
+          #!/usr/bin/env bash
+          set -eu
+          if [ -n "${AWS_ENDPOINT:-}" ]; then
+            exec aws --endpoint-url "$AWS_ENDPOINT" "$@"
+          fi
+          exec aws "$@"
+          SCRIPT
+          chmod +x "$RUNNER_TEMP/aws-deploy.sh"
+          echo "AWS_DEPLOY=$RUNNER_TEMP/aws-deploy.sh" >> "$GITHUB_ENV"
+
+      - name: Verify AWS credentials
+        run: |
+          "$AWS_DEPLOY" sts get-caller-identity
+
+      - name: Ensure ECR repositories
+        run: |
+          for repo in backend worker frontend; do
+            "$AWS_DEPLOY" ecr create-repository \
+              --repository-name "codecanary/$repo" \
+              --image-scanning-configuration scanOnPush=false \
+              --region "$AWS_REGION" \
+              2>/dev/null || true
+          done
+
+      - name: Log in to ECR
+        run: |
+          "$AWS_DEPLOY" ecr get-login-password --region "$AWS_REGION" \
+            | docker login --username AWS --password-stdin "$ECR_REGISTRY"
+
+      - name: Prepare frontend build env
+        run: |
+          cat > .env <<EOF
+          VITE_ADMIN_BASE=${VITE_ADMIN_BASE:-/roost}
+          VITE_ADMIN_HATCH=${VITE_ADMIN_HATCH:-hatch}
+          VITE_ADMIN_FORAGE=${VITE_ADMIN_FORAGE:-forage}
+          EOF
+
+      - name: Build and push backend
+        run: |
+          image="$ECR_REGISTRY/codecanary/backend"
+          docker build -t "$image:$IMAGE_TAG" -t "$image:latest" -f backend/Dockerfile backend/
+          docker push "$image:$IMAGE_TAG"
+          docker push "$image:latest"
+
+      - name: Build and push worker
+        run: |
+          image="$ECR_REGISTRY/codecanary/worker"
+          docker build -t "$image:$IMAGE_TAG" -t "$image:latest" -f worker/Dockerfile worker/
+          docker push "$image:$IMAGE_TAG"
+          docker push "$image:latest"
+
+      - name: Build and push frontend
+        run: |
+          image="$ECR_REGISTRY/codecanary/frontend"
+          docker build -t "$image:$IMAGE_TAG" -t "$image:latest" -f frontend/Dockerfile .
+          docker push "$image:$IMAGE_TAG"
+          docker push "$image:latest"
+
+      - name: Summary
+        run: |
+          echo "Pushed images (tag=$IMAGE_TAG):"
+          for repo in backend worker frontend; do
+            echo "  $ECR_REGISTRY/codecanary/$repo:$IMAGE_TAG"
+            echo "  $ECR_REGISTRY/codecanary/$repo:latest"
+          done
