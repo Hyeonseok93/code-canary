@@ -1,32 +1,37 @@
 variable "name_prefix" {
-  type = string
+  description = "Resource name prefix (e.g. codecanary-dev)."
+  type        = string
 }
 
 variable "aws_region" {
-  type = string
+  description = "AWS region for CloudWatch Logs."
+  type        = string
 }
 
 variable "vpc_id" {
-  type = string
+  description = "VPC identifier (reserved for future extensions such as EFS)."
+  type        = string
 }
 
 variable "subnet_ids" {
-  description = "Subnets for ECS tasks (public in dev)."
+  description = "Subnets for ECS tasks (public in dev, private when NAT is enabled)."
   type        = list(string)
 }
 
 variable "security_group_id" {
-  type = string
+  description = "Security group attached to ECS tasks."
+  type        = string
 }
 
 variable "ecr_registry" {
-  description = "ECR registry host without trailing slash (e.g. 123456789012.dkr.ecr.ap-northeast-2.amazonaws.com)."
+  description = "ECR registry host without trailing slash."
   type        = string
 }
 
 variable "image_tag" {
-  type    = string
-  default = "latest"
+  description = "Container image tag applied on initial task definition creation."
+  type        = string
+  default     = "latest"
 }
 
 variable "db_host" {
@@ -103,8 +108,38 @@ variable "frontend_memory" {
   default = 512
 }
 
+variable "desired_count" {
+  description = "Desired task count for each ECS service."
+  type        = number
+  default     = 1
+}
+
 variable "assign_public_ip" {
-  description = "Assign public IP to tasks (dev without NAT)."
+  description = "Assign a public IP to Fargate tasks (dev without NAT gateway)."
   type        = bool
   default     = true
+}
+
+variable "jwt_cookie_secure" {
+  description = "Set JWT_COOKIE_SECURE for the backend container."
+  type        = bool
+  default     = false
+}
+
+variable "enable_container_insights" {
+  description = "Enable ECS Container Insights on the cluster."
+  type        = bool
+  default     = false
+}
+
+variable "log_retention_in_days" {
+  description = "CloudWatch Logs retention for ECS tasks."
+  type        = number
+  default     = 7
+}
+
+variable "tags" {
+  description = "Common tags applied to all resources in this module."
+  type        = map(string)
+  default     = {}
 }

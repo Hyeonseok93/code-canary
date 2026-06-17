@@ -1,9 +1,11 @@
 variable "name_prefix" {
-  type = string
+  description = "Resource name prefix (e.g. codecanary-dev)."
+  type        = string
 }
 
 variable "vpc_id" {
-  type = string
+  description = "VPC for target groups."
+  type        = string
 }
 
 variable "subnet_ids" {
@@ -12,15 +14,42 @@ variable "subnet_ids" {
 }
 
 variable "security_group_id" {
-  type = string
+  description = "Security group attached to the ALB."
+  type        = string
 }
 
 variable "backend_target_port" {
-  type    = number
-  default = 8080
+  description = "Container port for the backend target group."
+  type        = number
+  default     = 8080
 }
 
 variable "frontend_target_port" {
-  type    = number
-  default = 8080
+  description = "Container port for the frontend target group."
+  type        = number
+  default     = 8080
+}
+
+variable "enable_deletion_protection" {
+  description = "Enable ALB deletion protection."
+  type        = bool
+  default     = false
+}
+
+variable "enable_https" {
+  description = "Enable HTTPS listener and HTTP to HTTPS redirect."
+  type        = bool
+  default     = false
+}
+
+variable "acm_certificate_arn" {
+  description = "ACM certificate ARN for HTTPS. Required when enable_https is true."
+  type        = string
+  default     = null
+}
+
+variable "tags" {
+  description = "Common tags applied to all resources in this module."
+  type        = map(string)
+  default     = {}
 }

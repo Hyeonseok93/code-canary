@@ -1,13 +1,19 @@
 # Copy to backend.hcl (gitignored) or pass via: terraform init -backend-config=backend.hcl
 #
-# fakecloud (WSL runner): create the state bucket once, then init from this directory.
-bucket                      = "codecanary-tfstate"
-key                         = "dev/terraform.tfstate"
-region                      = "ap-northeast-2"
-use_path_style              = true
-endpoints = {
-  s3 = "http://localhost:4566"
-}
-skip_credentials_validation = true
-skip_metadata_api_check     = true
-skip_requesting_account_id  = true
+# Real AWS S3 backend. Create the bucket once (versioning recommended).
+# Optional state locking: add dynamodb_table = "codecanary-tfstate-lock"
+bucket = "codecanary-tfstate"
+key    = "dev/terraform.tfstate"
+region = "ap-northeast-2"
+#
+# --- fakecloud / LocalStack Community (local only) ---
+# bucket                      = "codecanary-tfstate"
+# key                         = "dev/terraform.tfstate"
+# region                      = "ap-northeast-2"
+# use_path_style              = true
+# endpoints = {
+#   s3 = "http://localhost:4566"
+# }
+# skip_credentials_validation = true
+# skip_metadata_api_check     = true
+# skip_requesting_account_id  = true

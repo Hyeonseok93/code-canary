@@ -1,4 +1,8 @@
 locals {
+  tags = merge(var.tags, {
+    Module = "ecs"
+  })
+
   backend_image  = "${var.ecr_registry}/codecanary/backend:${var.image_tag}"
   worker_image   = "${var.ecr_registry}/codecanary/worker:${var.image_tag}"
   frontend_image = "${var.ecr_registry}/codecanary/frontend:${var.image_tag}"
@@ -18,17 +22,21 @@ resource "aws_ecs_cluster" "this" {
 
   setting {
     name  = "containerInsights"
-    value = "disabled"
+    value = var.enable_container_insights ? "enabled" : "disabled"
   }
 
-  tags = {
+  tags = merge(local.tags, {
     Name = "${var.name_prefix}-cluster"
-  }
+  })
 }
 
 resource "aws_cloudwatch_log_group" "this" {
   name              = "/ecs/${var.name_prefix}"
-  retention_in_days = 7
+  retention_in_days = var.log_retention_in_days
+
+  tags = merge(local.tags, {
+    Name = "${var.name_prefix}-ecs-logs"
+  })
 }
 
 data "aws_iam_policy_document" "ecs_task_assume" {
@@ -44,6 +52,10 @@ data "aws_iam_policy_document" "ecs_task_assume" {
 resource "aws_iam_role" "execution" {
   name               = "${var.name_prefix}-ecs-execution"
   assume_role_policy = data.aws_iam_policy_document.ecs_task_assume.json
+
+  tags = merge(local.tags, {
+    Name = "${var.name_prefix}-ecs-execution"
+  })
 }
 
 resource "aws_iam_role_policy_attachment" "execution" {
@@ -76,6 +88,10 @@ resource "aws_iam_role_policy" "execution_secrets" {
 resource "aws_iam_role" "task" {
   name               = "${var.name_prefix}-ecs-task"
   assume_role_policy = data.aws_iam_policy_document.ecs_task_assume.json
+
+  tags = merge(local.tags, {
+    Name = "${var.name_prefix}-ecs-task"
+  })
 }
 
 resource "aws_ecs_task_definition" "backend" {
@@ -107,7 +123,7 @@ resource "aws_ecs_task_definition" "backend" {
         { name = "REDIS_HOST", value = var.redis_host },
         { name = "REDIS_PORT", value = tostring(var.redis_port) },
         { name = "SERVER_PORT", value = "8080" },
-        { name = "JWT_COOKIE_SECURE", value = "false" },
+        { name = "JWT_COOKIE_SECURE", value = var.jwt_cookie_secure ? "true" : "false" },
         { name = "PIPELINE_DATA_ROOT", value = "/data" }
       ]
       secrets = [
@@ -118,6 +134,10 @@ resource "aws_ecs_task_definition" "backend" {
       logConfiguration = local.common_log_configuration
     }
   ])
+
+  tags = merge(local.tags, {
+    Name = "${var.name_prefix}-backend-task"
+  })
 }
 
 resource "aws_ecs_task_definition" "worker" {
@@ -147,6 +167,10 @@ resource "aws_ecs_task_definition" "worker" {
       logConfiguration = local.common_log_configuration
     }
   ])
+
+  tags = merge(local.tags, {
+    Name = "${var.name_prefix}-worker-task"
+  })
 }
 
 resource "aws_ecs_task_definition" "frontend" {
@@ -173,14 +197,26 @@ resource "aws_ecs_task_definition" "frontend" {
       logConfiguration = local.common_log_configuration
     }
   ])
+
+  tags = merge(local.tags, {
+    Name = "${var.name_prefix}-frontend-task"
+  })
 }
 
 resource "aws_ecs_service" "backend" {
   name            = "${var.name_prefix}-backend"
   cluster         = aws_ecs_cluster.this.id
   task_definition = aws_ecs_task_definition.backend.arn
-  desired_count   = 1
+  desired_count   = var.desired_count
   launch_type     = "FARGATE"
+
+  deployment_minimum_healthy_percent = 100
+  deployment_maximum_percent         = 200
+
+  deployment_circuit_breaker {
+    enable   = true
+    rollback = true
+  }
 
   network_configuration {
     subnets          = var.subnet_ids
@@ -193,28 +229,60 @@ resource "aws_ecs_service" "backend" {
     container_name   = "backend"
     container_port   = 8080
   }
+
+  lifecycle {
+    ignore_changes = [task_definition]
+  }
+
+  tags = merge(local.tags, {
+    Name = "${var.name_prefix}-backend"
+  })
 }
 
 resource "aws_ecs_service" "worker" {
   name            = "${var.name_prefix}-worker"
   cluster         = aws_ecs_cluster.this.id
   task_definition = aws_ecs_task_definition.worker.arn
-  desired_count   = 1
+  desired_count   = var.desired_count
   launch_type     = "FARGATE"
+
+  deployment_minimum_healthy_percent = 100
+  deployment_maximum_percent         = 200
+
+  deployment_circuit_breaker {
+    enable   = true
+    rollback = true
+  }
 
   network_configuration {
     subnets          = var.subnet_ids
     security_groups  = [var.security_group_id]
     assign_public_ip = var.assign_public_ip
   }
+
+  lifecycle {
+    ignore_changes = [task_definition]
+  }
+
+  tags = merge(local.tags, {
+    Name = "${var.name_prefix}-worker"
+  })
 }
 
 resource "aws_ecs_service" "frontend" {
   name            = "${var.name_prefix}-frontend"
   cluster         = aws_ecs_cluster.this.id
   task_definition = aws_ecs_task_definition.frontend.arn
-  desired_count   = 1
+  desired_count   = var.desired_count
   launch_type     = "FARGATE"
+
+  deployment_minimum_healthy_percent = 100
+  deployment_maximum_percent         = 200
+
+  deployment_circuit_breaker {
+    enable   = true
+    rollback = true
+  }
 
   network_configuration {
     subnets          = var.subnet_ids
@@ -227,4 +295,12 @@ resource "aws_ecs_service" "frontend" {
     container_name   = "frontend"
     container_port   = 8080
   }
+
+  lifecycle {
+    ignore_changes = [task_definition]
+  }
+
+  tags = merge(local.tags, {
+    Name = "${var.name_prefix}-frontend"
+  })
 }

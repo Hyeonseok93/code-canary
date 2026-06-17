@@ -8,6 +8,14 @@ provider "aws" {
   skip_metadata_api_check     = var.use_fakecloud
   skip_requesting_account_id  = var.use_fakecloud
 
+  default_tags {
+    tags = {
+      Project     = var.project_name
+      Environment = var.environment
+      ManagedBy   = "terraform"
+    }
+  }
+
   dynamic "endpoints" {
     for_each = var.use_fakecloud ? [var.fakecloud_endpoint] : []
     content {

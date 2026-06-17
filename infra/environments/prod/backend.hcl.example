@@ -1,6 +1,7 @@
-# Copy to backend.hcl or pass via: terraform init -backend-config=backend.hcl
+# Copy to backend.hcl (gitignored) or pass via: terraform init -backend-config=backend.hcl
 #
-# Use a dedicated S3 bucket (and optional DynamoDB lock table) in a production AWS account.
+# Prefer a separate S3 bucket and AWS account for production when possible.
+# dynamodb_table = "codecanary-tfstate-lock"
 bucket = "codecanary-tfstate"
 key    = "prod/terraform.tfstate"
 region = "ap-northeast-2"
