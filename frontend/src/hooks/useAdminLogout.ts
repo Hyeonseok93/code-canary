@@ -11,7 +11,7 @@ export const useAdminLogout = () => {
 
   return useCallback(async () => {
     try {
-      await adminApiClient.post('/api/auth/logout');
+      await adminApiClient.post('/api/admin/logout');
     } finally {
       clearCsrfTokenCache();
       queryClient.setQueryData(ADMIN_SESSION_QUERY_KEY, EMPTY_ADMIN_SESSION);

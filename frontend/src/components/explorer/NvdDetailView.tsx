@@ -4,6 +4,7 @@ import CvssMetricCards from './detail/CvssMetricCards';
 import CvssSeverityGauge from './detail/CvssSeverityGauge';
 import { formatVulnDate } from '../../utils/dateTime';
 import { getSeverityTheme } from '../../utils/severity';
+import { scoreBarWidthClass, scoreGlowClass } from '../../utils/chartColorClasses';
 import {
   buildCvssMetricGroups,
   resolveCvssVersion,
@@ -49,11 +50,7 @@ const NvdDetailView = ({ data }: NvdDetailViewProps) => {
                 </div>
                 <div className="w-full h-2.5 bg-white/5 rounded-full overflow-hidden relative">
                   <div
-                    className={`h-full bg-gradient-to-r ${theme.gradient} transition-all duration-1000`}
-                    style={{
-                      width: `${(nvd?.exploitabilityScore || 0) * 10}%`,
-                      boxShadow: `0 0 10px ${theme.stroke}44`,
-                    }}
+                    className={`h-full bg-gradient-to-r ${theme.gradient} transition-all duration-1000 ${scoreBarWidthClass(nvd?.exploitabilityScore || 0)} ${scoreGlowClass(nvd?.exploitabilityScore || 0)}`}
                   />
                 </div>
               </div>
@@ -67,11 +64,7 @@ const NvdDetailView = ({ data }: NvdDetailViewProps) => {
                 </div>
                 <div className="w-full h-2.5 bg-white/5 rounded-full overflow-hidden relative">
                   <div
-                    className={`h-full bg-gradient-to-r ${theme.gradient} transition-all duration-1000`}
-                    style={{
-                      width: `${(nvd?.impactScore || 0) * 10}%`,
-                      boxShadow: `0 0 10px ${theme.stroke}44`,
-                    }}
+                    className={`h-full bg-gradient-to-r ${theme.gradient} transition-all duration-1000 ${scoreBarWidthClass(nvd?.impactScore || 0)} ${scoreGlowClass(nvd?.impactScore || 0)}`}
                   />
                 </div>
               </div>

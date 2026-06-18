@@ -8,7 +8,7 @@ export const useAdminSession = () =>
   useQuery<AdminSession>({
     queryKey: ADMIN_SESSION_QUERY_KEY,
     queryFn: async () => {
-      const response = await adminApiClient.get<AdminSession>('/api/auth/session');
+      const response = await adminApiClient.get<AdminSession>('/api/admin/session');
       return response.data;
     },
     retry: false,

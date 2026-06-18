@@ -1,4 +1,5 @@
 import { getSeverityTheme } from '../../../utils/severity';
+import { severityDropGlowClass } from '../../../utils/chartColorClasses';
 
 interface CvssSeverityGaugeProps {
   baseScore: number;
@@ -42,8 +43,7 @@ const CvssSeverityGauge = ({ baseScore, severity }: CvssSeverityGaugeProps) => {
             strokeDasharray={circumference}
             strokeDashoffset={strokeDashoffset}
             strokeLinecap="round"
-            className="transition-all duration-1000 ease-out"
-            style={{ filter: `drop-shadow(0 0 8px ${theme.stroke}66)` }}
+            className={`transition-all duration-1000 ease-out ${severityDropGlowClass(baseScore)}`}
           />
         </svg>
         <div className="absolute flex flex-col items-center">

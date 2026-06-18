@@ -4,6 +4,18 @@ locals {
   })
 
   use_custom_domain = length(var.aliases) > 0 && var.acm_certificate_arn != null
+
+  origin_request_headers = [
+    "Accept",
+    "Accept-Language",
+    "Authorization",
+    "Content-Type",
+    "Host",
+    "Origin",
+    "Referer",
+    "X-Requested-With",
+    "X-XSRF-TOKEN",
+  ]
 }
 
 resource "aws_cloudfront_distribution" "this" {
@@ -27,7 +39,7 @@ resource "aws_cloudfront_distribution" "this" {
   }
 
   default_cache_behavior {
-    allowed_methods        = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+    allowed_methods        = ["GET", "HEAD", "OPTIONS"]
     cached_methods         = ["GET", "HEAD"]
     target_origin_id       = "alb"
     viewer_protocol_policy = "redirect-to-https"
@@ -35,7 +47,7 @@ resource "aws_cloudfront_distribution" "this" {
 
     forwarded_values {
       query_string = true
-      headers      = ["Authorization", "Host"]
+      headers      = local.origin_request_headers
 
       cookies {
         forward = "all"
@@ -57,7 +69,7 @@ resource "aws_cloudfront_distribution" "this" {
 
     forwarded_values {
       query_string = true
-      headers      = ["Authorization", "Host"]
+      headers      = local.origin_request_headers
 
       cookies {
         forward = "all"

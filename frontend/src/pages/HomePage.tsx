@@ -23,7 +23,7 @@ const HomePage = () => {
         />
 
         {/* 2. Metrics Header */}
-        <div className="mt-20 mb-8 px-2 animate-reveal" style={{ animationDelay: '0.2s' }}>
+        <div className="mt-20 mb-8 px-2 animate-reveal reveal-delay-200">
           <h2 className="text-3xl font-black text-white tracking-tighter">
             Intelligence <span className="text-neutral-500">Metrics</span>
           </h2>
@@ -37,7 +37,7 @@ const HomePage = () => {
         />
 
         {/* 3. Analytics Dashboard: Tabs, Distribution, and Trends */}
-        <div className="mt-24 mb-8 px-2 animate-reveal" style={{ animationDelay: '0.4s' }}>
+        <div className="mt-24 mb-8 px-2 animate-reveal reveal-delay-400">
           <h2 className="text-3xl font-black text-white tracking-tighter">
             Analytical <span className="text-neutral-500">Deep-dive</span>
           </h2>

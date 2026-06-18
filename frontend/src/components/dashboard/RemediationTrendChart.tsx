@@ -5,7 +5,9 @@ import ErrorState from '../common/ErrorState';
 import { DEFAULT_PLACEHOLDER_ERROR } from '../../constants/errorState';
 import DashboardPanelHeader from './DashboardPanelHeader';
 import type { RemediationAnalytics } from '../../types/analytics';
+import ChartTooltip from '../common/ChartTooltip';
 import { REMEDIATION_COLORS } from '../../constants/dashboardConstants';
+import { remediationDotClass } from '../../utils/chartColorClasses';
 import { useContainerDimensions } from '../../hooks/useContainerDimensions';
 
 interface RemediationTrendChartProps {
@@ -46,24 +48,17 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
       const name = yearData[`rank${i}_cat`] as string;
       const val = yearData[`rank${i}_count`] as number;
       if (name && name !== 'Unknown' && val > 0) {
-        items.push({ label: name, value: val, color: REMEDIATION_COLORS[name] || '#333' });
+        items.push({
+          label: name,
+          value: val,
+          dotClassName: remediationDotClass(name),
+        });
       }
     }
     // 툴팁도 데이터가 큰 순서대로 정렬
     items.sort((a, b) => b.value - a.value);
 
-    return (
-      <div style={{ backgroundColor: '#111', border: '1px solid #333', borderRadius: '12px', padding: '12px', minWidth: '150px' }}>
-        <p style={{ color: '#fff', fontWeight: 'bold', marginBottom: '8px', fontSize: '12px' }}>{label}</p>
-        {items.map((item, idx) => (
-          <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-            <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: item.color }} />
-            <span style={{ color: '#aaa', fontSize: '10px', fontWeight: 'bold' }}>{item.label}</span>
-            <span style={{ color: '#fff', fontSize: '10px', fontWeight: 'bold', marginLeft: 'auto' }}>{item.value.toLocaleString()}</span>
-          </div>
-        ))}
-      </div>
-    );
+    return <ChartTooltip title={label} items={items} />;
   }
   return null;
 };

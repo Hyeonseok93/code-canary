@@ -11,6 +11,10 @@ public final class RateLimitKeys {
         return PREFIX + ":login:fail:" + sanitize(clientIp);
     }
 
+    public static String loginFailuresForUser(String username) {
+        return PREFIX + ":login:user:fail:" + sanitize(username.toLowerCase());
+    }
+
     public static String loginRequests(String clientIp) {
         return PREFIX + ":login:req:" + sanitize(clientIp);
     }
@@ -19,7 +23,11 @@ public final class RateLimitKeys {
         return PREFIX + ":analytics:" + category + ":" + sanitize(clientIp);
     }
 
-    private static String sanitize(String clientIp) {
-        return clientIp.replace(':', '_').replace('/', '_');
+    public static String adminRequests(String clientIp) {
+        return PREFIX + ":admin:req:" + sanitize(clientIp);
+    }
+
+    private static String sanitize(String value) {
+        return value.replace(':', '_').replace('/', '_');
     }
 }

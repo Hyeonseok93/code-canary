@@ -17,27 +17,6 @@ resource "aws_lb" "this" {
   })
 }
 
-resource "aws_lb_target_group" "backend" {
-  name        = "${var.name_prefix}-backend"
-  port        = var.backend_target_port
-  protocol    = "HTTP"
-  vpc_id      = var.vpc_id
-  target_type = "ip"
-
-  health_check {
-    enabled             = true
-    path                = "/actuator/health"
-    matcher             = "200"
-    healthy_threshold   = 2
-    unhealthy_threshold = 3
-    interval            = 30
-  }
-
-  tags = merge(local.tags, {
-    Name = "${var.name_prefix}-backend-tg"
-  })
-}
-
 resource "aws_lb_target_group" "frontend" {
   name        = "${var.name_prefix}-frontend"
   port        = var.frontend_target_port
@@ -95,22 +74,3 @@ resource "aws_lb_listener" "https" {
   }
 }
 
-locals {
-  api_listener_arn = var.enable_https ? aws_lb_listener.https[0].arn : aws_lb_listener.http.arn
-}
-
-resource "aws_lb_listener_rule" "api" {
-  listener_arn = local.api_listener_arn
-  priority     = 10
-
-  action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.backend.arn
-  }
-
-  condition {
-    path_pattern {
-      values = ["/api/*"]
-    }
-  }
-}

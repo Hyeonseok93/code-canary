@@ -8,6 +8,7 @@ import { isAdminRole, isAuthenticatedAdmin } from '../constants/adminRoles';
 import { EMPTY_ADMIN_SESSION } from '../constants/adminSession';
 import { resolveLoginError } from '../utils/loginErrors';
 import { ADMIN_SESSION_QUERY_KEY, useAdminSession } from '../hooks/useAdminSession';
+import { useAdminNoIndex } from '../hooks/useAdminNoIndex';
 import { ROOST_BASE } from '../constants/roostPaths';
 import type { AdminProfile, AdminSession } from '../types/explorer';
 
@@ -20,6 +21,8 @@ const AdminLoginPage = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useAdminNoIndex();
 
   useEffect(() => {
     void resolveCsrfToken();
@@ -37,7 +40,7 @@ const AdminLoginPage = () => {
 
   const clearServerSession = async () => {
     try {
-      await adminApiClient.post('/api/auth/logout');
+      await adminApiClient.post('/api/admin/logout');
     } catch {
       // Best-effort cleanup after rejected login.
     } finally {

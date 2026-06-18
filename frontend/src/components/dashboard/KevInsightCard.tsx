@@ -3,6 +3,7 @@ import { useVulnerabilityNavigation } from '../../hooks/useVulnerabilityNavigati
 import type { KevInsight } from '../../types/analytics';
 
 import { getSeverityTheme } from '../../utils/severity';
+import { revealIndexDelayClass } from '../../utils/chartColorClasses';
 
 interface KevInsightCardProps {
   insight: KevInsight;
@@ -34,8 +35,7 @@ const KevInsightCard = ({ insight, index }: KevInsightCardProps) => {
   return (
     <div 
       onClick={handleCardClick}
-      className="group relative bg-neutral-900/40 border border-white/[0.14] rounded-2xl p-4 hover:bg-neutral-900/60 hover:border-white/25 hover:-translate-y-1 transition-all duration-500 flex flex-col h-full overflow-hidden animate-reveal cursor-pointer"
-      style={{ animationDelay: `${0.1 * index}s` }}
+      className={`group relative bg-neutral-900/40 border border-white/[0.14] rounded-2xl p-4 hover:bg-neutral-900/60 hover:border-white/25 hover:-translate-y-1 transition-all duration-500 flex flex-col h-full overflow-hidden animate-reveal cursor-pointer ${revealIndexDelayClass(index)}`}
     >
       {/* Header: ID, Badges, Time */}
       <div className="flex justify-between items-start mb-3">

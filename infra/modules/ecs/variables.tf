@@ -70,10 +70,6 @@ variable "jwt_secret_arn" {
   type = string
 }
 
-variable "backend_target_group_arn" {
-  type = string
-}
-
 variable "frontend_target_group_arn" {
   type = string
 }
@@ -130,6 +126,12 @@ variable "frontend_hsts_enabled" {
   description = "Enable HSTS response header on the frontend nginx container."
   type        = bool
   default     = false
+}
+
+variable "frontend_operator_cidrs" {
+  description = "Comma-separated CIDRs allowed to reach /roost, /api/auth/login, and /api/admin (empty = no restriction)."
+  type        = string
+  default     = ""
 }
 
 variable "trusted_proxy_cidrs" {

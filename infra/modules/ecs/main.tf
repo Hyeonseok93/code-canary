@@ -22,6 +22,40 @@ locals {
       "awslogs-stream-prefix" = "ecs"
     }
   }
+
+  backend_upstream = "backend.${var.name_prefix}.local:8080"
+}
+
+resource "aws_service_discovery_private_dns_namespace" "this" {
+  name = "${var.name_prefix}.local"
+  vpc  = var.vpc_id
+
+  tags = merge(local.tags, {
+    Name = "${var.name_prefix}-sd-namespace"
+  })
+}
+
+resource "aws_service_discovery_service" "backend" {
+  name = "backend"
+
+  dns_config {
+    namespace_id = aws_service_discovery_private_dns_namespace.this.id
+
+    dns_records {
+      ttl  = 10
+      type = "A"
+    }
+
+    routing_policy = "MULTIVVALUE"
+  }
+
+  health_check_custom_config {
+    failure_threshold = 1
+  }
+
+  tags = merge(local.tags, {
+    Name = "${var.name_prefix}-backend-sd"
+  })
 }
 
 resource "aws_ecs_cluster" "this" {
@@ -273,7 +307,10 @@ resource "aws_ecs_task_definition" "frontend" {
         }
       ]
       environment = [
-        { name = "NGINX_HSTS_ENABLED", value = var.frontend_hsts_enabled ? "true" : "false" }
+        { name = "NGINX_HSTS_ENABLED", value = var.frontend_hsts_enabled ? "true" : "false" },
+        { name = "NGINX_OPERATOR_CIDRS", value = var.frontend_operator_cidrs },
+        { name = "NGINX_BACKEND_UPSTREAM", value = local.backend_upstream },
+        { name = "NGINX_TRUSTED_PROXY_CIDRS", value = var.trusted_proxy_cidrs }
       ]
       logConfiguration = local.common_log_configuration
     }
@@ -305,10 +342,8 @@ resource "aws_ecs_service" "backend" {
     assign_public_ip = var.assign_public_ip
   }
 
-  load_balancer {
-    target_group_arn = var.backend_target_group_arn
-    container_name   = "backend"
-    container_port   = 8080
+  service_registries {
+    registry_arn = aws_service_discovery_service.backend.arn
   }
 
   lifecycle {

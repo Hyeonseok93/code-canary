@@ -6,6 +6,7 @@ import DashboardPanelHeader from './DashboardPanelHeader';
 import type { DashboardTab } from './AnalyticsTabs';
 import type { DashboardAnalytics, VectorAnalytics, RemediationAnalytics } from '../../types/analytics';
 import { SEVERITY_COLORS, VECTOR_COLORS, SOURCE_COLORS, REMEDIATION_COLORS, SEVERITY_ORDER } from '../../constants/dashboardConstants';
+import { distributionDotClass, distributionDotGlowClass, severityDotClass, sourceDotClass, remediationDotClass, vectorDotClass } from '../../utils/chartColorClasses';
 
 interface DistributionDonutProps {
   activeTab: DashboardTab;
@@ -197,19 +198,13 @@ const DistributionDonut = ({
                           if (active && payload && payload.length) {
                             const data = payload[0].payload;
                             const label = data.label || data.attackVector || 'Unknown';
-                            const color =
-                              activeTab === 'source'
-                                ? SOURCE_COLORS[label] || '#fff'
-                                : activeTab === 'severity'
-                                  ? SEVERITY_COLORS[label] || '#fff'
-                                  : activeTab === 'remediation'
-                                    ? REMEDIATION_COLORS[label] || '#fff'
-                                    : getVectorColor(label);
+                            const dotClass = distributionDotClass(activeTab, label);
+                            const glowClass = distributionDotGlowClass(activeTab, label);
 
                             return (
                               <div className="bg-neutral-950/90 border border-white/10 px-4 py-3 rounded-2xl shadow-[0_0_30px_rgba(0,0,0,0.5)] backdrop-blur-md animate-reveal flex flex-col gap-1 min-w-[140px] z-50">
                                 <div className="flex items-center gap-2">
-                                  <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: color, boxShadow: `0 0 8px ${color}` }} />
+                                  <div className={`w-2.5 h-2.5 rounded-full ${dotClass} ${glowClass}`} />
                                   <span className="text-[10px] font-black text-neutral-400 uppercase tracking-wider">{label}</span>
                                 </div>
                                 <div className="flex items-baseline gap-1 mt-1">
@@ -246,7 +241,7 @@ const DistributionDonut = ({
               : activeTab === 'source' 
               ? analyticsData?.sourceDistribution?.map((item) => (
                   <div key={item.label} className="flex items-center justify-center gap-3">
-                    <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: SOURCE_COLORS[item.label] }} />
+                    <div className={`w-2 h-2 rounded-full flex-shrink-0 ${sourceDotClass(item.label)}`} />
                     <div className="flex flex-col items-center">
                       <span className="text-[10px] font-bold text-neutral-500 uppercase">{item.label}</span>
                       <span className="text-xs font-black text-white">{item.count.toLocaleString()} ({item.percentage}%)</span>
@@ -256,7 +251,7 @@ const DistributionDonut = ({
               : activeTab === 'severity'
               ? sortedSeverityDistribution.map((item) => (
                   <div key={item.label} className="flex items-center justify-start gap-3">
-                    <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: SEVERITY_COLORS[item.label] }} />
+                    <div className={`w-2 h-2 rounded-full flex-shrink-0 ${severityDotClass(item.label)}`} />
                     <div className="flex flex-col">
                       <span className="text-[10px] font-bold text-neutral-500 uppercase">{item.label}</span>
                       <span className="text-xs font-black text-white">{item.percentage}%</span>
@@ -266,7 +261,7 @@ const DistributionDonut = ({
               : activeTab === 'remediation'
               ? sortedRemediationDistribution.map((item) => (
                   <div key={item.label} className="flex items-center justify-start gap-3">
-                    <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: REMEDIATION_COLORS[item.label] }} />
+                    <div className={`w-2 h-2 rounded-full flex-shrink-0 ${remediationDotClass(item.label)}`} />
                     <div className="flex flex-col">
                       <span className="text-[10px] font-bold text-neutral-500 uppercase">{item.label}</span>
                       <span className="text-xs font-black text-white">{item.percentage}%</span>
@@ -275,7 +270,7 @@ const DistributionDonut = ({
                 ))
               : sortedVectorDistribution.map((item) => (
                   <div key={item.attackVector} className="flex items-center justify-start gap-3">
-                    <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: getVectorColor(item.attackVector) }} />
+                    <div className={`w-2 h-2 rounded-full flex-shrink-0 ${vectorDotClass(item.attackVector)}`} />
                     <div className="flex flex-col">
                       <span className="text-[10px] font-bold text-neutral-500 uppercase">{item.attackVector}</span>
                       <span className="text-xs font-black text-white">{item.count.toLocaleString()}</span>

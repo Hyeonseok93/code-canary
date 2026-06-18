@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import AdminSidebar from '../components/admin/AdminSidebar';
 import AdminMobileHeader from '../components/admin/AdminMobileHeader';
+import { useAdminNoIndex } from '../hooks/useAdminNoIndex';
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -9,6 +10,8 @@ interface AdminLayoutProps {
 }
 
 const AdminLayout = ({ children, username, onLogout }: AdminLayoutProps) => {
+  useAdminNoIndex();
+
   return (
     <div className="min-h-screen flex bg-[#050505] text-neutral-300">
       <AdminSidebar username={username} onLogout={onLogout} />

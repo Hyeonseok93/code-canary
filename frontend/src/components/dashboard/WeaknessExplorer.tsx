@@ -12,16 +12,19 @@ interface WeaknessExplorerProps {
   isError: boolean;
 }
 
-const PILLAR_COLORS: Record<string, string> = {
-  'Injection & Input Validation': '#3B82F6',
-  'Memory Safety': '#EF4444',
-  'Auth & Access Control': '#F97316',
-  'Crypto & Data Security': '#10B981',
-  'Resource Management': '#8B5CF6',
-  'Logic & Design Errors': '#F59E0B',
-  'Others & Unclassified': '#64748B',
-  'Not Specified': '#333333'
+const PILLAR_STYLES: Record<string, { dot: string; accent: string }> = {
+  'ALL': { dot: 'pillar-dot-all', accent: 'pillar-accent-all' },
+  'Injection & Input Validation': { dot: 'pillar-dot-injection', accent: 'pillar-accent-injection' },
+  'Memory Safety': { dot: 'pillar-dot-memory', accent: 'pillar-accent-memory' },
+  'Auth & Access Control': { dot: 'pillar-dot-auth', accent: 'pillar-accent-auth' },
+  'Crypto & Data Security': { dot: 'pillar-dot-crypto', accent: 'pillar-accent-crypto' },
+  'Resource Management': { dot: 'pillar-dot-resource', accent: 'pillar-accent-resource' },
+  'Logic & Design Errors': { dot: 'pillar-dot-logic', accent: 'pillar-accent-logic' },
+  'Others & Unclassified': { dot: 'pillar-dot-others', accent: 'pillar-accent-others' },
+  'Not Specified': { dot: 'pillar-dot-unspecified', accent: 'pillar-accent-unspecified' },
 };
+
+const defaultPillarStyle = { dot: 'pillar-dot-others', accent: 'pillar-accent-others' };
 
 const WeaknessExplorer = ({ data, isLoading, isError }: WeaknessExplorerProps) => {
   const [selectedPillar, setSelectedPillar] = useState<string>('Total');
@@ -70,9 +73,12 @@ const WeaknessExplorer = ({ data, isLoading, isError }: WeaknessExplorerProps) =
                 percentage={100}
                 isActive={selectedPillar === 'Total'}
                 onClick={() => setSelectedPillar('Total')}
-                color="#FFFFFF"
+                dotClassName={PILLAR_STYLES.ALL.dot}
+                accentClassName={PILLAR_STYLES.ALL.accent}
               />
-              {data?.pillars.map((p) => (
+              {data?.pillars.map((p) => {
+                const styles = PILLAR_STYLES[p.pillar] ?? defaultPillarStyle;
+                return (
                 <WeaknessPillarCard 
                   key={p.pillar}
                   pillar={p.pillar}
@@ -80,9 +86,10 @@ const WeaknessExplorer = ({ data, isLoading, isError }: WeaknessExplorerProps) =
                   percentage={p.percentage}
                   isActive={selectedPillar === p.pillar}
                   onClick={() => setSelectedPillar(p.pillar)}
-                  color={PILLAR_COLORS[p.pillar] || '#666'}
+                  dotClassName={styles.dot}
+                  accentClassName={styles.accent}
                 />
-              ))}
+              );})}
             </>
           )}
         </div>

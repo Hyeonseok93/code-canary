@@ -83,7 +83,7 @@ const HeroSection = ({
         />
       </div>
 
-      <div className="flex flex-col items-center lg:items-start text-center lg:text-left animate-reveal" style={{ animationDelay: '0.2s' }}>
+      <div className="flex flex-col items-center lg:items-start text-center lg:text-left animate-reveal reveal-delay-200">
         <div className="inline-flex items-center justify-center px-3 py-1 bg-white/5 cc-panel-border-soft rounded-full mb-6">
           <span className="text-[10px] font-black text-neutral-400 uppercase tracking-[0.3em] pl-[0.3em] leading-none">
             Precision Security Analysis

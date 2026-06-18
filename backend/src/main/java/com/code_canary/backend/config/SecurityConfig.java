@@ -48,7 +48,7 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new BCryptPasswordEncoder(12);
     }
 
     @Bean
@@ -79,6 +79,9 @@ public class SecurityConfig {
                         .csrfTokenRepository(csrfTokenRepository)
                         .csrfTokenRequestHandler(csrfHandler)
                 )
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .formLogin(AbstractHttpConfigurer::disable)
+                .logout(AbstractHttpConfigurer::disable)
                 .headers(headers -> {
                     headers.contentTypeOptions(withDefaults());
                     headers.frameOptions(frame -> frame.sameOrigin());
@@ -100,9 +103,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/actuator/health", "/actuator/health/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/auth/csrf").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/auth/session").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/auth/logout").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/admin/session").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/admin/logout").authenticated()
                         .requestMatchers("/api/analytics/**").permitAll()
                         .requestMatchers("/api/admin/**").hasAuthority(RoleConstants.ROLE_ADMIN)
                         .anyRequest().denyAll()

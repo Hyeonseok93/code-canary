@@ -3,7 +3,7 @@ import ErrorState from '../common/ErrorState';
 import { DEFAULT_PLACEHOLDER_ERROR } from '../../constants/errorState';
 import DashboardPanelHeader from './DashboardPanelHeader';
 import type { EcosystemDistribution } from '../../types/analytics';
-import { ECOSYSTEM_COLORS } from '../../constants/dashboardConstants';
+import { ecosystemDotClass } from '../../utils/chartColorClasses';
 
 interface EcosystemTableProps {
   data: EcosystemDistribution[] | undefined;
@@ -69,8 +69,7 @@ const EcosystemTable: FC<EcosystemTableProps> = ({ data, isLoading, isError }) =
                   <td className="pl-8 pr-2 py-0">
                     <div className="flex items-center gap-2.5 overflow-hidden h-6">
                       <div 
-                        className="w-1.5 h-1.5 rounded-full flex-shrink-0" 
-                        style={{ backgroundColor: ECOSYSTEM_COLORS[item.ecosystem] || `hsl(${idx * 137.5 % 360}, 50%, 50%)` }} 
+                        className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${ecosystemDotClass(item.ecosystem, idx)}`}
                       />
                       <span className="text-[11px] font-bold text-neutral-300 group-hover:text-white transition-colors truncate whitespace-nowrap">
                         {item.ecosystem}

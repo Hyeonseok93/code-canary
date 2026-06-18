@@ -19,14 +19,16 @@ public class LoginRateLimiter {
     private final SlidingWindowRateLimiter slidingWindowRateLimiter;
     private final LoginSecurityProperties properties;
 
-    public void assertAllowed(String clientIp) {
+    public void assertAllowed(String clientIp, String username) {
         String failureKey = RateLimitKeys.loginFailures(clientIp);
+        String userFailureKey = RateLimitKeys.loginFailuresForUser(username);
         String requestKey = RateLimitKeys.loginRequests(clientIp);
         Duration lockoutWindow = Duration.ofMinutes(properties.getLockoutMinutes());
 
         try {
-            long failures = slidingWindowRateLimiter.count(failureKey, lockoutWindow);
-            if (failures >= properties.getMaxFailures()) {
+            long ipFailures = slidingWindowRateLimiter.count(failureKey, lockoutWindow);
+            long userFailures = slidingWindowRateLimiter.count(userFailureKey, lockoutWindow);
+            if (ipFailures >= properties.getMaxFailures() || userFailures >= properties.getMaxFailures()) {
                 throw new LoginRateLimitExceededException(
                         "Too many failed login attempts. Try again later."
                 );
@@ -45,21 +47,21 @@ public class LoginRateLimiter {
         }
     }
 
-    public void recordFailure(String clientIp) {
+    public void recordFailure(String clientIp, String username) {
+        Duration lockoutWindow = Duration.ofMinutes(properties.getLockoutMinutes());
         try {
-            slidingWindowRateLimiter.record(
-                    RateLimitKeys.loginFailures(clientIp),
-                    Duration.ofMinutes(properties.getLockoutMinutes())
-            );
+            slidingWindowRateLimiter.record(RateLimitKeys.loginFailures(clientIp), lockoutWindow);
+            slidingWindowRateLimiter.record(RateLimitKeys.loginFailuresForUser(username), lockoutWindow);
         } catch (DataAccessException ex) {
             log.error("[RATE LIMIT] Redis unavailable while recording login failure", ex);
         }
     }
 
-    public void recordSuccess(String clientIp) {
+    public void recordSuccess(String clientIp, String username) {
         try {
             slidingWindowRateLimiter.reset(
                     RateLimitKeys.loginFailures(clientIp),
+                    RateLimitKeys.loginFailuresForUser(username),
                     RateLimitKeys.loginRequests(clientIp)
             );
         } catch (DataAccessException ex) {

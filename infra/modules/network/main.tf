@@ -175,6 +175,15 @@ resource "aws_vpc_security_group_ingress_rule" "ecs_from_alb" {
   referenced_security_group_id = aws_security_group.alb.id
 }
 
+resource "aws_vpc_security_group_ingress_rule" "ecs_from_self" {
+  security_group_id            = aws_security_group.ecs.id
+  description                  = "Frontend to backend (Cloud Map)"
+  from_port                    = 8080
+  to_port                      = 8080
+  ip_protocol                  = "tcp"
+  referenced_security_group_id = aws_security_group.ecs.id
+}
+
 resource "aws_vpc_security_group_egress_rule" "ecs_all" {
   security_group_id = aws_security_group.ecs.id
   ip_protocol       = "-1"

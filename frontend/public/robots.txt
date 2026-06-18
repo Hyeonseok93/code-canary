@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: /roost
+Disallow: /api/admin/
+Disallow: /api/auth/login

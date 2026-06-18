@@ -6,11 +6,12 @@ interface WeaknessPillarCardProps {
   percentage: number;
   isActive: boolean;
   onClick: () => void;
-  color: string;
+  dotClassName: string;
+  accentClassName: string;
 }
 
-const WeaknessPillarCard = ({ 
-  pillar, count, percentage, isActive, onClick, color 
+const WeaknessPillarCard = ({
+  pillar, count, percentage, isActive, onClick, dotClassName, accentClassName,
 }: WeaknessPillarCardProps) => {
   return (
     <button
@@ -23,7 +24,7 @@ const WeaknessPillarCard = ({
     >
       <div className="flex flex-col gap-1 z-10">
         <div className="flex items-center gap-2">
-          <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: color }} />
+          <div className={`w-1.5 h-1.5 rounded-full ${dotClassName}`} />
           <span className={`text-[11px] font-black uppercase tracking-wider transition-colors ${
             isActive ? 'text-white' : 'text-neutral-500 group-hover:text-neutral-300'
           }`}>
@@ -47,12 +48,8 @@ const WeaknessPillarCard = ({
         }`} 
       />
 
-      {/* Background Accent for Active State */}
       {isActive && (
-        <div 
-          className="absolute inset-0 opacity-5 pointer-events-none" 
-          style={{ backgroundColor: color }} 
-        />
+        <div className={`absolute inset-0 opacity-5 pointer-events-none ${accentClassName}`} />
       )}
     </button>
   );

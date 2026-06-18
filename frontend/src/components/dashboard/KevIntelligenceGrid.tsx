@@ -15,7 +15,7 @@ const KevIntelligenceGrid = () => {
       </div>
 
       {!isLoading && !isError && insights && insights.length > 0 && (
-        <div className="flex items-center gap-2.5 px-3.5 py-2 bg-neutral-900/40 border border-white/10 rounded-full text-neutral-400 w-fit backdrop-blur-md shadow-[0_0_15px_rgba(0,0,0,0.2)] animate-reveal" style={{ animationDelay: '0.1s' }}>
+        <div className="flex items-center gap-2.5 px-3.5 py-2 bg-neutral-900/40 border border-white/10 rounded-full text-neutral-400 w-fit backdrop-blur-md shadow-[0_0_15px_rgba(0,0,0,0.2)] animate-reveal reveal-delay-100">
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-500/50 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></span>

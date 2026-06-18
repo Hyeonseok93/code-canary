@@ -37,7 +37,7 @@ const AnalyticsDashboard = ({
     <>
       <AnalyticsTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-reveal min-w-0" style={{ animationDelay: '0.6s' }}>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-reveal reveal-delay-600 min-w-0">
         {activeTab === 'ecosystem' ? (
           <>
             <EcosystemTable 

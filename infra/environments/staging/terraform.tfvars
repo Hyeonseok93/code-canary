@@ -30,6 +30,9 @@ enable_https                   = false
 # enable_waf                       = true
 # enable_cloudfront                = false
 
+# Operator IP allowlist (staging/prod — required for go-live)
+# frontend_operator_cidrs = "203.0.113.0/24"
+
 ecs_desired_count             = 1
 ecs_enable_container_insights = true
 ecs_log_retention_in_days     = 14

@@ -246,3 +246,9 @@ variable "frontend_memory" {
   type    = number
   default = 512
 }
+
+variable "frontend_operator_cidrs" {
+  description = "Comma-separated CIDRs for operator console (/roost, /api/auth/login, /api/admin). Empty = no IP restriction (dev)."
+  type        = string
+  default     = ""
+}

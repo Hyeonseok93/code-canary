@@ -1,0 +1,229 @@
+@layer components {
+  .chart-tooltip {
+    @apply bg-[#111] border border-[#333] rounded-xl p-3 min-w-[150px];
+  }
+
+  .chart-tooltip-title {
+    @apply text-white font-bold mb-2 text-xs;
+  }
+
+  .chart-tooltip-row {
+    @apply flex items-center gap-2 mb-1;
+  }
+
+  .chart-tooltip-label {
+    @apply text-[#aaa] text-[10px] font-bold;
+  }
+
+  .chart-tooltip-value {
+    @apply text-white text-[10px] font-bold ml-auto;
+  }
+
+  .chart-tooltip-dot {
+    @apply w-2 h-2 rounded-full flex-shrink-0;
+  }
+
+  .score-bar-track {
+    @apply w-full h-2.5 bg-white/5 rounded-full overflow-hidden relative;
+  }
+
+  .score-bar-fill {
+    @apply h-full transition-all duration-1000;
+  }
+
+  .trend-skeleton-shape {
+    clip-path: polygon(0 100%, 10% 80%, 25% 90%, 40% 60%, 55% 75%, 75% 40%, 90% 50%, 100% 20%, 100% 100%);
+  }
+}
+
+.severity-dot-critical { background-color: #EF4444; }
+.severity-dot-high { background-color: #F97316; }
+.severity-dot-medium { background-color: #EAB308; }
+.severity-dot-low { background-color: #22C55E; }
+.severity-dot-none { background-color: #737373; }
+
+.source-dot-nvd { background-color: #3B82F6; }
+.source-dot-osv { background-color: #10B981; }
+.source-dot-github { background-color: #A855F7; }
+.source-dot-kev { background-color: #EF4444; }
+.source-dot-default { background-color: #737373; }
+
+.remediation-dot-patch-ready { background-color: #22C55E; }
+.remediation-dot-solution-provided { background-color: #3B82F6; }
+.remediation-dot-pending { background-color: #EAB308; }
+.remediation-dot-unpatched { background-color: #EF4444; }
+.remediation-dot-end-of-life { background-color: #F97316; }
+.remediation-dot-invalid { background-color: #737373; }
+
+.vector-dot-network { background-color: #3B82F6; }
+.vector-dot-adjacent { background-color: #10B981; }
+.vector-dot-local { background-color: #F59E0B; }
+.vector-dot-physical { background-color: #EF4444; }
+
+.ecosystem-dot-npm { background-color: #CB3837; }
+.ecosystem-dot-pypi { background-color: #3776AB; }
+.ecosystem-dot-go { background-color: #00ADD8; }
+.ecosystem-dot-maven { background-color: #C71A36; }
+.ecosystem-dot-nuget { background-color: #004880; }
+.ecosystem-dot-packagist { background-color: #F28D1A; }
+.ecosystem-dot-rubygems { background-color: #E9573F; }
+.ecosystem-dot-github-actions { background-color: #2088FF; }
+.ecosystem-dot-android { background-color: #3DDC84; }
+.ecosystem-dot-debian { background-color: #A81D33; }
+.ecosystem-dot-alpine { background-color: #004481; }
+.ecosystem-dot-ubuntu { background-color: #E95420; }
+.ecosystem-dot-azure-linux { background-color: #0078D4; }
+.ecosystem-dot-alpaquita { background-color: #FFD700; }
+
+.ecosystem-fallback-0 { background-color: hsl(0, 50%, 50%); }
+.ecosystem-fallback-1 { background-color: hsl(137, 50%, 50%); }
+.ecosystem-fallback-2 { background-color: hsl(274, 50%, 50%); }
+.ecosystem-fallback-3 { background-color: hsl(51, 50%, 50%); }
+.ecosystem-fallback-4 { background-color: hsl(188, 50%, 50%); }
+
+.chart-series-0 { background-color: #3B82F6; }
+.chart-series-1 { background-color: #10B981; }
+.chart-series-2 { background-color: #F59E0B; }
+.chart-series-3 { background-color: #EF4444; }
+.chart-series-4 { background-color: #8B5CF6; }
+.chart-series-5 { background-color: #EC4899; }
+
+.score-bar-0 { width: 0%; }
+.score-bar-1 { width: 1%; }
+.score-bar-2 { width: 2%; }
+.score-bar-3 { width: 3%; }
+.score-bar-4 { width: 4%; }
+.score-bar-5 { width: 5%; }
+.score-bar-6 { width: 6%; }
+.score-bar-7 { width: 7%; }
+.score-bar-8 { width: 8%; }
+.score-bar-9 { width: 9%; }
+.score-bar-10 { width: 10%; }
+.score-bar-11 { width: 11%; }
+.score-bar-12 { width: 12%; }
+.score-bar-13 { width: 13%; }
+.score-bar-14 { width: 14%; }
+.score-bar-15 { width: 15%; }
+.score-bar-16 { width: 16%; }
+.score-bar-17 { width: 17%; }
+.score-bar-18 { width: 18%; }
+.score-bar-19 { width: 19%; }
+.score-bar-20 { width: 20%; }
+.score-bar-21 { width: 21%; }
+.score-bar-22 { width: 22%; }
+.score-bar-23 { width: 23%; }
+.score-bar-24 { width: 24%; }
+.score-bar-25 { width: 25%; }
+.score-bar-26 { width: 26%; }
+.score-bar-27 { width: 27%; }
+.score-bar-28 { width: 28%; }
+.score-bar-29 { width: 29%; }
+.score-bar-30 { width: 30%; }
+.score-bar-31 { width: 31%; }
+.score-bar-32 { width: 32%; }
+.score-bar-33 { width: 33%; }
+.score-bar-34 { width: 34%; }
+.score-bar-35 { width: 35%; }
+.score-bar-36 { width: 36%; }
+.score-bar-37 { width: 37%; }
+.score-bar-38 { width: 38%; }
+.score-bar-39 { width: 39%; }
+.score-bar-40 { width: 40%; }
+.score-bar-41 { width: 41%; }
+.score-bar-42 { width: 42%; }
+.score-bar-43 { width: 43%; }
+.score-bar-44 { width: 44%; }
+.score-bar-45 { width: 45%; }
+.score-bar-46 { width: 46%; }
+.score-bar-47 { width: 47%; }
+.score-bar-48 { width: 48%; }
+.score-bar-49 { width: 49%; }
+.score-bar-50 { width: 50%; }
+.score-bar-51 { width: 51%; }
+.score-bar-52 { width: 52%; }
+.score-bar-53 { width: 53%; }
+.score-bar-54 { width: 54%; }
+.score-bar-55 { width: 55%; }
+.score-bar-56 { width: 56%; }
+.score-bar-57 { width: 57%; }
+.score-bar-58 { width: 58%; }
+.score-bar-59 { width: 59%; }
+.score-bar-60 { width: 60%; }
+.score-bar-61 { width: 61%; }
+.score-bar-62 { width: 62%; }
+.score-bar-63 { width: 63%; }
+.score-bar-64 { width: 64%; }
+.score-bar-65 { width: 65%; }
+.score-bar-66 { width: 66%; }
+.score-bar-67 { width: 67%; }
+.score-bar-68 { width: 68%; }
+.score-bar-69 { width: 69%; }
+.score-bar-70 { width: 70%; }
+.score-bar-71 { width: 71%; }
+.score-bar-72 { width: 72%; }
+.score-bar-73 { width: 73%; }
+.score-bar-74 { width: 74%; }
+.score-bar-75 { width: 75%; }
+.score-bar-76 { width: 76%; }
+.score-bar-77 { width: 77%; }
+.score-bar-78 { width: 78%; }
+.score-bar-79 { width: 79%; }
+.score-bar-80 { width: 80%; }
+.score-bar-81 { width: 81%; }
+.score-bar-82 { width: 82%; }
+.score-bar-83 { width: 83%; }
+.score-bar-84 { width: 84%; }
+.score-bar-85 { width: 85%; }
+.score-bar-86 { width: 86%; }
+.score-bar-87 { width: 87%; }
+.score-bar-88 { width: 88%; }
+.score-bar-89 { width: 89%; }
+.score-bar-90 { width: 90%; }
+.score-bar-91 { width: 91%; }
+.score-bar-92 { width: 92%; }
+.score-bar-93 { width: 93%; }
+.score-bar-94 { width: 94%; }
+.score-bar-95 { width: 95%; }
+.score-bar-96 { width: 96%; }
+.score-bar-97 { width: 97%; }
+.score-bar-98 { width: 98%; }
+.score-bar-99 { width: 99%; }
+.score-bar-100 { width: 100%; }
+
+.glow-red { box-shadow: 0 0 10px rgba(239, 68, 68, 0.27); }
+.glow-orange { box-shadow: 0 0 10px rgba(249, 115, 22, 0.27); }
+.glow-yellow { box-shadow: 0 0 10px rgba(234, 179, 8, 0.27); }
+.glow-blue { box-shadow: 0 0 10px rgba(96, 165, 250, 0.27); }
+
+.drop-glow-red { filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.4)); }
+.drop-glow-orange { filter: drop-shadow(0 0 8px rgba(249, 115, 22, 0.4)); }
+.drop-glow-yellow { filter: drop-shadow(0 0 8px rgba(234, 179, 8, 0.4)); }
+.drop-glow-blue { filter: drop-shadow(0 0 8px rgba(96, 165, 250, 0.4)); }
+
+.dot-glow-red { box-shadow: 0 0 8px rgba(239, 68, 68, 0.65); }
+.dot-glow-orange { box-shadow: 0 0 8px rgba(249, 115, 22, 0.65); }
+.dot-glow-yellow { box-shadow: 0 0 8px rgba(234, 179, 8, 0.65); }
+.dot-glow-blue { box-shadow: 0 0 8px rgba(59, 130, 246, 0.65); }
+.dot-glow-green { box-shadow: 0 0 8px rgba(34, 197, 94, 0.65); }
+.pillar-dot-all { background-color: #FFFFFF; }
+.pillar-dot-injection { background-color: #3B82F6; }
+.pillar-dot-memory { background-color: #EF4444; }
+.pillar-dot-auth { background-color: #F97316; }
+.pillar-dot-crypto { background-color: #10B981; }
+.pillar-dot-resource { background-color: #8B5CF6; }
+.pillar-dot-logic { background-color: #F59E0B; }
+.pillar-dot-others { background-color: #64748B; }
+.pillar-dot-unspecified { background-color: #333333; }
+
+.pillar-accent-all { background-color: #FFFFFF; }
+.pillar-accent-injection { background-color: #3B82F6; }
+.pillar-accent-memory { background-color: #EF4444; }
+.pillar-accent-auth { background-color: #F97316; }
+.pillar-accent-crypto { background-color: #10B981; }
+.pillar-accent-resource { background-color: #8B5CF6; }
+.pillar-accent-logic { background-color: #F59E0B; }
+.pillar-accent-others { background-color: #64748B; }
+.pillar-accent-unspecified { background-color: #333333; }
+
+.legend-dot-total-indigo { background-color: #6366F1; }
+.legend-dot-mal { background-color: #F59E0B; }

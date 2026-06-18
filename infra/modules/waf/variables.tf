@@ -20,6 +20,12 @@ variable "alb_arn" {
   default     = null
 }
 
+variable "operator_cidrs" {
+  description = "Comma-separated operator CIDRs. When set, blocks /roost, /api/auth/login, and /api/admin from other IPs."
+  type        = string
+  default     = ""
+}
+
 variable "tags" {
   description = "Tags applied to created resources."
   type        = map(string)

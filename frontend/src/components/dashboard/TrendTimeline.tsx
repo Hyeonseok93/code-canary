@@ -5,6 +5,7 @@ import { DEFAULT_PLACEHOLDER_ERROR } from '../../constants/errorState';
 import DashboardPanelHeader from './DashboardPanelHeader';
 import type { DashboardTab } from './AnalyticsTabs';
 import type { DashboardAnalytics, VectorAnalytics } from '../../types/analytics';
+import { chartSeriesDotClass, severityDotClass, sourceDotClass, vectorDotClass } from '../../utils/chartColorClasses';
 import { useContainerDimensions } from '../../hooks/useContainerDimensions';
 
 interface TrendTimelineProps {
@@ -74,24 +75,24 @@ const TrendTimeline = ({
   const legendItems =
     activeTab === 'source'
       ? [
-          { label: 'Total', color: '#6366F1' },
-          { label: 'NVD', color: '#3B82F6' },
-          { label: 'OSV', color: '#10B981' },
-          { label: 'MAL', color: '#F59E0B' },
+          { label: 'Total', dotClass: 'legend-dot-total-indigo' },
+          { label: 'NVD', dotClass: sourceDotClass('NVD') },
+          { label: 'OSV', dotClass: sourceDotClass('OSV') },
+          { label: 'MAL', dotClass: 'legend-dot-mal' },
         ]
       : activeTab === 'severity'
         ? [
-            { label: 'Total', color: '#3B82F6' },
-            { label: 'Critical', color: '#EF4444' },
-            { label: 'High', color: '#F97316' },
-            { label: 'Medium', color: '#EAB308' },
-            { label: 'Low', color: '#22C55E' },
+            { label: 'Total', dotClass: 'chart-series-0' },
+            { label: 'Critical', dotClass: severityDotClass('Critical') },
+            { label: 'High', dotClass: severityDotClass('High') },
+            { label: 'Medium', dotClass: severityDotClass('Medium') },
+            { label: 'Low', dotClass: severityDotClass('Low') },
           ]
         : [
-            { label: 'Network', color: '#3B82F6' },
-            { label: 'Adjacent', color: '#10B981' },
-            { label: 'Local', color: '#F59E0B' },
-            { label: 'Physical', color: '#EF4444' },
+            { label: 'Network', dotClass: vectorDotClass('NETWORK') },
+            { label: 'Adjacent', dotClass: vectorDotClass('ADJACENT') },
+            { label: 'Local', dotClass: vectorDotClass('LOCAL') },
+            { label: 'Physical', dotClass: vectorDotClass('PHYSICAL') },
           ];
 
   return (
@@ -111,7 +112,7 @@ const TrendTimeline = ({
                 ))
               : legendItems.map((item) => (
                   <div key={item.label} className="flex items-center gap-1.5">
-                    <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: item.color }} />
+                    <div className={`w-1.5 h-1.5 rounded-full ${item.dotClass}`} />
                     <span className="text-[8px] font-bold text-neutral-500 uppercase">{item.label}</span>
                   </div>
                 ))}
@@ -127,11 +128,10 @@ const TrendTimeline = ({
             <div className="absolute inset-0 flex flex-col justify-between pt-4 pb-8">
               <div className="flex-grow border-b border-dashed border-white/[0.12] relative overflow-hidden">
                 {/* Skeleton grid lines */}
-                {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="absolute w-full border-t border-dashed border-white/[0.12]" style={{ top: `${i * 20}%` }} />
+                {(['grid-line-20', 'grid-line-40', 'grid-line-60', 'grid-line-80'] as const).map((lineClass) => (
+                  <div key={lineClass} className={`absolute w-full border-t border-dashed border-white/[0.12] ${lineClass}`} />
                 ))}
-                {/* Skeleton area path */}
-                <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-white/5 to-transparent animate-skeleton" style={{ clipPath: 'polygon(0 100%, 10% 80%, 25% 90%, 40% 60%, 55% 75%, 75% 40%, 90% 50%, 100% 20%, 100% 100%)' }} />
+                <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-white/5 to-transparent animate-skeleton trend-skeleton-shape" />
               </div>
               <div className="flex justify-between mt-4">
                 {[1, 2, 3, 4, 5, 6].map((i) => (
@@ -195,7 +195,7 @@ const TrendTimeline = ({
                                    return (
                                      <div key={sIdx} className="flex items-center justify-between gap-6">
                                        <div className="flex items-center gap-2">
-                                         <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.stroke || entry.color, boxShadow: `0 0 6px ${entry.stroke || entry.color}` }} />
+                                         <div className={`w-2 h-2 rounded-full ${chartSeriesDotClass(sIdx)} dot-glow-blue`} />
                                          <span className="text-[9px] font-black text-neutral-400 uppercase tracking-wider">{entry.name}</span>
                                        </div>
                                        <span className="text-xs font-black text-white font-mono">{entry.value?.toLocaleString()}</span>

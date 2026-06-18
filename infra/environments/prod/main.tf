@@ -108,6 +108,7 @@ module "waf" {
   name_prefix = local.name_prefix
   scope       = "REGIONAL"
   alb_arn     = module.alb.alb_arn
+  operator_cidrs = var.frontend_operator_cidrs
   tags        = local.common_tags
 }
 
@@ -137,6 +138,7 @@ module "waf_cloudfront" {
 
   name_prefix = "${local.name_prefix}-cf"
   scope       = "CLOUDFRONT"
+  operator_cidrs = var.frontend_operator_cidrs
   tags        = local.common_tags
 }
 
@@ -218,13 +220,13 @@ module "ecs" {
   redis_password_secret_arn = module.data.redis_password_secret_arn
   jwt_secret_arn            = module.data.jwt_secret_arn
 
-  backend_target_group_arn  = module.alb.backend_target_group_arn
   frontend_target_group_arn = module.alb.frontend_target_group_arn
 
   assign_public_ip          = local.ecs_assign_public_ip
   desired_count             = var.ecs_desired_count
   jwt_cookie_secure         = local.jwt_cookie_secure
   frontend_hsts_enabled     = local.use_secure_cookies
+  frontend_operator_cidrs   = var.frontend_operator_cidrs
   trusted_proxy_cidrs       = local.trusted_proxy_cidrs
   efs_file_system_id        = var.enable_pipeline_efs ? module.storage[0].file_system_id : null
   efs_access_point_id       = var.enable_pipeline_efs ? module.storage[0].access_point_id : null

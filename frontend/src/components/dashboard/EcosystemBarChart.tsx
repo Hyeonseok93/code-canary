@@ -5,7 +5,9 @@ import ErrorState from '../common/ErrorState';
 import { DEFAULT_PLACEHOLDER_ERROR } from '../../constants/errorState';
 import DashboardPanelHeader from './DashboardPanelHeader';
 import type { EcosystemTrend } from '../../types/analytics';
+import ChartTooltip from '../common/ChartTooltip';
 import { ECOSYSTEM_COLORS } from '../../constants/dashboardConstants';
+import { ecosystemDotClass } from '../../utils/chartColorClasses';
 import { useContainerDimensions } from '../../hooks/useContainerDimensions';
 
 interface EcosystemBarChartProps {
@@ -50,7 +52,7 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
         items.push({
           label: name,
           value: val,
-          color: ECOSYSTEM_COLORS[name] || `hsl(${i * 137.5 % 360}, 50%, 50%)`
+          dotClassName: ecosystemDotClass(name, i),
         });
       }
     }
@@ -58,16 +60,7 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
     items.sort((a, b) => b.value - a.value);
 
     return (
-      <div style={{ backgroundColor: '#111', border: '1px solid #333', borderRadius: '12px', padding: '12px', minWidth: '160px' }}>
-        <p style={{ color: '#fff', fontWeight: 'bold', marginBottom: '8px', fontSize: '12px' }}>{label}</p>
-        {items.map((item, idx) => (
-          <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-            <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: item.color }} />
-            <span style={{ color: '#aaa', fontSize: '10px', fontWeight: 'bold' }}>{item.label}</span>
-            <span style={{ color: '#fff', fontSize: '10px', fontWeight: 'bold', marginLeft: 'auto' }}>{item.value.toLocaleString()}</span>
-          </div>
-        ))}
-      </div>
+      <ChartTooltip title={label} items={items} />
     );
   }
   return null;

@@ -31,6 +31,9 @@ enable_https                   = false
 # enable_waf                       = true
 # enable_cloudfront                = true
 
+# Operator IP allowlist (prod go-live — required)
+# frontend_operator_cidrs = "203.0.113.0/24,198.51.100.10/32"
+
 ecs_desired_count             = 2
 ecs_enable_container_insights = true
 ecs_log_retention_in_days     = 30

@@ -6,6 +6,7 @@ import PipelineSourcePanelSkeleton from '../components/admin/PipelineSourcePanel
 import PipelineGoldBanner from '../components/admin/PipelineGoldBanner';
 import PipelineGoldBannerSkeleton from '../components/admin/PipelineGoldBannerSkeleton';
 import { PIPELINE_STEP_KEYS } from '../constants/pipelineStepKeys';
+import { staggerDelayClass } from '../utils/chartColorClasses';
 import { useAdminPageShell } from '../hooks/useAdminPageShell';
 import { usePipelineControl } from '../hooks/usePipelineControl';
 import { usePipelineStaging } from '../hooks/usePipelineStaging';
@@ -77,8 +78,7 @@ const AdminHomePage = () => {
             {pipelines.map((pipeline, index) => (
               <div
                 key={pipeline.source}
-                className="animate-reveal"
-                style={{ animationDelay: `${index * 0.12}s` }}
+                className={`animate-reveal ${staggerDelayClass(index)}`}
               >
                 <PipelineSourcePanel
                   pipeline={pipeline}
@@ -103,7 +103,7 @@ const AdminHomePage = () => {
         {isPipelineLoading ? (
           <PipelineGoldBannerSkeleton />
         ) : (
-          <div className="animate-reveal" style={{ animationDelay: '0.24s' }}>
+          <div className="animate-reveal reveal-delay-240">
             <PipelineGoldBanner
               gold={gold}
               onRefreshGold={() => {

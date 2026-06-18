@@ -13,7 +13,12 @@ __pycache__/
 logs/
 *.log
 
-docs/
+# Security guideline PDF (local reference copy)
+2._Web*
+
+docs/*
+!docs/security/
+!docs/security/**
 
 # Terraform
 .terraform/

@@ -12,13 +12,33 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Set;
 
 @Slf4j
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
+    private static final Set<String> SKIP_EXACT_PATHS = Set.of(
+            "/api/auth/csrf",
+            "/api/auth/login"
+    );
+
+    private static final Set<String> SKIP_PREFIXES = Set.of(
+            "/api/analytics/",
+            "/actuator/"
+    );
+
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthCookieService authCookieService;
+
+    @Override
+    protected boolean shouldNotFilter(@NonNull HttpServletRequest request) {
+        String path = request.getRequestURI();
+        if (SKIP_EXACT_PATHS.contains(path)) {
+            return true;
+        }
+        return SKIP_PREFIXES.stream().anyMatch(path::startsWith);
+    }
 
     @Override
     protected void doFilterInternal(
